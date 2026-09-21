@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EmporioNova - La tua Destinazione E-Commerce Premium</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Supabase JS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --accent-light: #fef3c7;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-alt: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -1px rgba(0,0,0,0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.03);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-full: 9999px;
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body: 'Open Sans', sans-serif;
+      --transition: all 0.25s ease-in-out;
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      color: var(--text-main);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+    a {
+      color: var(--primary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    a:hover {
+      color: var(--primary-dark);
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: var(--transition);
+      text-align: center;
+    }
+    .btn-primary {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .btn-accent {
+      background-color: var(--accent);
+      color: #ffffff;
+    }
+    .btn-accent:hover {
+      background-color: var(--accent-hover);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    .btn-outline {
+      background-color: transparent;
+      border-color: var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background-color: var(--surface-alt);
+      border-color: var(--text-muted);
+    }
+    .btn-sm {
+      padding: 0.45rem 0.9rem;
+      font-size: 0.85rem;
+    }
+    /* Top Bar Alert */
+    .top-bar {
+      background-color: var(--text-main);
+      color: #ffffff;
+      font-size: 0.8rem;
+      padding: 0.4rem 0;
+      text-align: center;
+      font-weight: 500;
+    }
+    .top-bar span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+    /* Main Header Navigation */
+    .site-header {
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+    }
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 74px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    .brand-logo span {
+      color: var(--accent);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-link {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-main);
+      padding: 0.5rem 0.25rem;
+      position: relative;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--primary);
+    }
+    .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: var(--primary);
+      border-radius: var(--radius-full);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .cart-btn-indicator {
+      position: relative;
+      background: var(--surface-alt);
+      border: none;
+      padding: 0.55rem 0.9rem;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-family: var(--font-heading);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text-main);
+    }
+    .cart-badge {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-radius: var(--radius-full);
+      padding: 0.15rem 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-main);
+    }
+    /* SPA Page Display Management */
+    .page-section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      min-height: calc(100vh - 280px);
+    }
+    .page-section.active {
+      display: block;
+      opacity: 1;
+    }
+    /* Hero Section Shared */
+    .hero-banner {
+      position: relative;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      padding: 4.5rem 0;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero-content h1 {
+      font-size: 2.75rem;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      color: #0f172a;
+    }
+    .hero-content h1 span {
+      color: var(--primary);
+    }
+    .hero-content p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 540px;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .hero-image-wrap {
+      position: relative;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      background-color: #fff;
+      border: 4px solid #ffffff;
+    }
+    .hero-image-wrap img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .hero-image-wrap:hover img {
+      transform: scale(1.03);
+    }
+    /* Section Headers */
+    .section-title-wrap {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 3rem auto;
+    }
+    .section-subtitle {
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .section-title-wrap h2 {
+      font-size: 2.2rem;
+      margin-bottom: 0.75rem;
+    }
+    .section-title-wrap p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+    /* Products Grid */
+    .catalog-section {
+      padding: 4.5rem 0;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 2rem;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .product-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+      border-color: var(--primary-light);
+    }
+    .product-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-sm);
+      z-index: 2;
+    }
+    .product-image-container {
+      height: 220px;
+      background-color: var(--surface-alt);
+      overflow: hidden;
+      position: relative;
+    }
+    .product-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .product-image-container img {
+      transform: scale(1.05);
+    }
+    .product-details {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .product-category {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+    .product-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      flex-grow: 1;
+    }
+    .product-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--surface-alt);
+    }
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-family: var(--font-heading);
+    }
+    .product-actions-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+    /* Features Section */
+    .features-section {
+      padding: 4.5rem 0;
+      background-color: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+    .feature-card {
+      padding: 2rem;
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      transition: var(--transition);
+      text-align: left;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    /* Filters for Catalog */
+    .catalog-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      background: var(--surface);
+      padding: 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+    .category-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .cat-btn {
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .sort-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .sort-select {
+      padding: 0.45rem 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background-color: var(--surface);
+      font-family: var(--font-body);
+      outline: none;
+    }
+    /* Auth Page Styles */
+    .auth-section {
+      padding: 4rem 0;
+    }
+    .auth-container-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: flex-start;
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+    .auth-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-md);
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.85rem;
+      background: none;
+      border: none;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: var(--transition);
+    }
+    .auth-tab-btn.active {
+      color: var(--primary);
+    }
+    .auth-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background-color: var(--primary);
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: var(--font-body);
+      transition: var(--transition);
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+    .auth-perks {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #ffffff;
+      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    .auth-perks h3 {
+      color: #ffffff;
+      font-size: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+    .perks-list {
+      list-style: none;
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .perks-list li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    .perk-bullet {
+      background: var(--accent);
+      color: #ffffff;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+      font-size: 0.8rem;
+    }
+    /* Dashboard Layout */
+    .dashboard-container {
+      padding: 3rem 0 4rem;
+    }
+    .dash-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.75rem 2rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .dash-user-info h2 {
+      font-size: 1.7rem;
+      margin-bottom: 0.25rem;
+    }
+    .dash-user-info p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .dash-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1.75rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+    .dash-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+    .dash-card-icon {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+    .dash-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.4rem;
+    }
+    .dash-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .table-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow-x: auto;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    table.custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    table.custom-table th {
+      padding: 0.75rem 1rem;
+      background: var(--surface-alt);
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--text-main);
+      border-bottom: 2px solid var(--border);
+    }
+    table.custom-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-paid {
+      background: #dcfce7;
+      color: #15803d;
+    }
+    .status-pending {
+      background: #fef3c7;
+      color: #b45309;
+    }
+    /* Modal Cart */
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: -420px;
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      background: var(--surface);
+      box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+      z-index: 2000;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+    .cart-drawer.open {
+      right: 0;
+    }
+    .cart-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-items-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .cart-item-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-item-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: var(--surface-alt);
+    }
+    .cart-item-details {
+      flex: 1;
+    }
+    .cart-item-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .cart-item-price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 0.9rem;
+    }
+    .cart-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface-alt);
+    }
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    .cart-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(2px);
+      z-index: 1999;
+      display: none;
+    }
+    .cart-backdrop.open {
+      display: block;
+    }
+    /* Footer Styles */
+    .site-footer {
+      background-color: #0f172a;
+      color: #94a3b8;
+      padding: 4.5rem 0 2rem;
+      margin-top: auto;
+      border-top: 1px solid #1e293b;
+    }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 3rem;
+      margin-bottom: 3.5rem;
+    }
+    .footer-brand h3 {
+      color: #ffffff;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .footer-brand span {
+      color: var(--accent);
+    }
+    .footer-brand p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      max-width: 320px;
+    }
+    .footer-col h4 {
+      color: #ffffff;
+      font-size: 1.05rem;
+      margin-bottom: 1.25rem;
+    }
+    .footer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .footer-links a {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .footer-links a:hover {
+      color: #ffffff;
+    }
+    .footer-bottom {
+      border-top: 1px solid #1e293b;
+      padding-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-content p {
+        margin: 0 auto 2rem;
+      }
+      .hero-actions {
+        justify-content: center;
+      }
+      .auth-container-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        position: absolute;
+        top: 74px;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        flex-direction: column;
+        padding: 1.5rem;
+        box-shadow: var(--shadow-md);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-links.show-mobile {
+        display: flex;
+      }
+      .hero-content h1 {
+        font-size: 2.1rem;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body translate="no" dir="ltr">
+  <!-- Top Announcement Bar -->
+  <div class="top-bar">
+    <div class="container">
+      Spedizione Gratuita per ordini superiori a 49€ | Approfitta degli <span>Sconti di Primavera</span>!
+    </div>
+  </div>
+  <!-- Global Header Navigation -->
+  <header class="site-header">
+    <div class="container nav-wrapper">
+      <a href="#home" class="brand-logo" onclick="showPage('home'); return false;">
+        Emporio<span>Nova</span>
+      </a>
+      <!-- Mobile Toggle -->
+      <button type="button" class="menu-toggle" id="menuToggle" aria-label="Apri Menu" onclick="toggleMobileMenu()">
+        ☰
+      </button>
+      <!-- Nav items -->
+      <nav>
+        <ul class="nav-links" id="mainNavLinks">
+          <li><a href="#home" class="nav-link active" data-page="home" onclick="showPage('home'); return false;">Home</a></li>
+          <li><a href="#catalogo" class="nav-link" data-page="catalogo" onclick="showPage('catalogo'); return false;">Catalogo</a></li>
+          <!-- Visible when unauthenticated -->
+          <li><a href="#autenticazione" class="nav-link" data-page="autenticazione" onclick="showPage('autenticazione'); return false;">Accedi</a></li>
+          <!-- Visible for user role -->
+          <li data-role="user" style="display:none;">
+            <a href="#dashboard-utente" class="nav-link" data-page="dashboard-utente" onclick="showPage('dashboard-utente'); return false;">Area Personale</a>
+          </li>
+          <!-- Visible for admin role -->
+          <li data-role="admin" style="display:none;">
+            <a href="#dashboard-admin" class="nav-link" data-page="dashboard-admin" onclick="showPage('dashboard-utente'); return false;">Amministrazione</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="nav-actions">
+        <!-- Cart button toggler -->
+        <button type="button" class="cart-btn-indicator" onclick="toggleCartModal()" title="Vedi Carrello">
+          🛒 <span class="cart-badge" id="cartCountBadge">0</span>
+        </button>
+        <!-- Supabase Logout Button (shown only when authenticated) -->
+        <div data-role="user" style="display:none;">
+          <button type="button" class="btn btn-outline btn-sm" data-auth="logout">Esci</button>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Cart Drawer Component -->
+  <div class="cart-backdrop" id="cartBackdrop" onclick="toggleCartModal()"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Carrello della spesa">
+    <div class="cart-header">
+      <h3>Il tuo Carrello</h3>
+      <button type="button" class="btn btn-outline btn-sm" onclick="toggleCartModal()">✕ Chiudi</button>
+    </div>
+    <div class="cart-items-container" id="cartItemsContainer">
+      <!-- Injected via JavaScript -->
+      <p style="text-align:center; color:var(--text-muted); margin-top:2rem;">Il carrello è vuoto.</p>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Totale:</span>
+        <span id="cartSubtotalAmount">0.00 €</span>
+      </div>
+      <!-- PayPal Checkout using explicit {{PAYPAL_ME_ACCOUNT}} token -->
+      <a id="paypalCheckoutLink" href="https://paypal.me/{{PAYPAL_ME_ACCOUNT}}" target="_blank" rel="noopener noreferrer" class="btn btn-accent" style="width:100%; margin-bottom:0.6rem;">
+        Paga con PayPal
+      </a>
+      <button type="button" class="btn btn-outline btn-sm" style="width:100%;" onclick="clearCart()">Svuota Carrello</button>
+    </div>
+  </aside>
+  <!-- ========================================== -->
+  <!-- PAGE: HOME (/home)                         -->
+  <!-- ========================================== -->
+  <section id="home" class="page-section active">
+    <!-- Hero Section -->
+    <div class="hero-banner">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="section-subtitle">Qualità & Garanzia Premium</span>
+            <h1>Benvenuti su <span>EmporioNova</span></h1>
+            <p>La tua destinazione premium per lo shopping online. Scopri le nostre offerte esclusive, la selezione accurata di accessori lifestyle e i prodotti di tendenza.</p>
+            <div class="hero-actions">
+              <a href="#catalogo" class="btn btn-primary" onclick="showPage('catalogo'); return false;">Esplora Catalogo</a>
+              <a href="#autenticazione" class="btn btn-outline" onclick="showPage('autenticazione'); return false;">Crea un Account</a>
+            </div>
+          </div>
+          <div class="hero-image-wrap">
+            <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png" alt="EmporioNova Vetrina Prodotti Esclusivi" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Gallery / Featured Products Section -->
+    <div class="catalog-section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <span class="section-subtitle">I più desiderati</span>
+          <h2>Prodotti in Evidenza</h2>
+          <p>Una vetrina dei nostri articoli più venduti e apprezzati dalla clientela con spedizione rapida garantita.</p>
+        </div>
+        <div class="product-grid">
+          <!-- Featured Item 1 -->
+          <article class="product-card" data-product-id="prod-001">
+            <span class="product-tag">Bestseller</span>
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/327e36b12_generated_image.png" alt="NovaSound Auricolari Wireless Pro">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Elettronica</span>
+              <h3 class="product-title">NovaSound Wireless Pro</h3>
+              <p class="product-desc">Cancellazione attiva del rumore e audio ad altissima risoluzione, fino a 36 ore di riproduzione.</p>
+              <div class="product-meta">
+                <span class="product-price">129,90 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="addToCart('NovaSound Wireless Pro', 129.90, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/327e36b12_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Featured Item 2 -->
+          <article class="product-card" data-product-id="prod-002">
+            <span class="product-tag">Novità</span>
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png" alt="Zaino Tecnico Voyager">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Lifestyle & Viaggi</span>
+              <h3 class="product-title">Zaino Tecnico Voyager</h3>
+              <p class="product-desc">Tessuto idrorepellente, scomparto imbottito per laptop fino a 16 pollici e porta di ricarica USB.</p>
+              <div class="product-meta">
+                <span class="product-price">79,00 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="addToCart('Zaino Tecnico Voyager', 79.00, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Featured Item 3 -->
+          <article class="product-card" data-product-id="prod-003">
+            <span class="product-tag">In Offerta</span>
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png" alt="Smart Watch Chrono Nova">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Smart Tech</span>
+              <h3 class="product-title">Smart Watch Chrono Nova</h3>
+              <p class="product-desc">Monitoraggio salute avanzato, GPS integrato e scocca in alluminio satinato ultraleggero.</p>
+              <div class="product-meta">
+                <span class="product-price">189,50 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="flex:1;" onclick="addToCart('Smart Watch Chrono Nova', 189.50, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+    <!-- Features Section -->
+    <div class="features-section">
+      <div class="container">
+        <div class="section-title-wrap">
+          <span class="section-subtitle">Il nostro impegno</span>
+          <h2>Perché Scegliere EmporioNova</h2>
+          <p>Uniamo tecnologia affidabile, assistenza diretta e cura per ogni spedizione.</p>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🚀</div>
+            <h3>Spedizioni Rapide</h3>
+            <p>Consegna in 24/48 ore su tutto il territorio nazionale con tracking in tempo reale costantemente aggiornato.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Pagamenti Protetti</h3>
+            <p>Transazioni criptate di livello bancario e supporto diretto con PayPal per la massima tranquillità d'acquisto.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💬</div>
+            <h3>Supporto Dedicato</h3>
+            <p>Il nostro team di esperti di assistenza è operativo 7 giorni su 7 per rispondere a ogni tua domanda o richiesta.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ========================================== -->
+  <!-- PAGE: CATALOGO (/catalogo)                 -->
+  <!-- ========================================== -->
+  <section id="catalogo" class="page-section">
+    <!-- Hero / Header Section -->
+    <div class="hero-banner" style="padding:3.5rem 0;">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <span class="section-subtitle">Esplora la Collezione</span>
+            <h1>Catalogo Completo <span>EmporioNova</span></h1>
+            <p>Sfoglia migliaia di prodotti divisi per categorie. Trova esattamente quello che cerchi con filtri dedicati e offerte esclusive aggiornate ogni settimana.</p>
+          </div>
+          <div class="hero-image-wrap" style="max-height: 280px;">
+            <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png" alt="Categorie EmporioNova" style="height:280px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Catalog Interactive Filters & Products Section -->
+    <div class="catalog-section">
+      <div class="container">
+        <!-- Controls & Categories -->
+        <div class="catalog-controls">
+          <div class="category-pills">
+            <button type="button" class="cat-btn active" onclick="filterCatalog('tutti', this)">Tutti i Prodotti</button>
+            <button type="button" class="cat-btn" onclick="filterCatalog('elettronica', this)">Elettronica</button>
+            <button type="button" class="cat-btn" onclick="filterCatalog('lifestyle', this)">Lifestyle</button>
+            <button type="button" class="cat-btn" onclick="filterCatalog('casa', this)">Casa & Ufficio</button>
+          </div>
+          <div class="sort-group">
+            <label for="sortSelect">Ordina per:</label>
+            <select id="sortSelect" class="sort-select" onchange="sortCatalog(this.value)">
+              <option value="featured">Più Rilevanti</option>
+              <option value="low-high">Prezzo: Crescente</option>
+              <option value="high-low">Prezzo: Decrescente</option>
+            </select>
+          </div>
+        </div>
+        <!-- Product Gallery Grid -->
+        <div class="product-grid" id="catalogProductsGrid">
+          <!-- Item 1 -->
+          <article class="product-card" data-category="elettronica" data-price="129.90">
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/327e36b12_generated_image.png" alt="NovaSound Wireless Pro">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Elettronica</span>
+              <h3 class="product-title">NovaSound Wireless Pro</h3>
+              <p class="product-desc">Qualità acustica professionale con cancellazione rumore attiva ANC.</p>
+              <div class="product-meta">
+                <span class="product-price">129,90 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="width:100%;" onclick="addToCart('NovaSound Wireless Pro', 129.90, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/327e36b12_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 2 -->
+          <article class="product-card" data-category="lifestyle" data-price="79.00">
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png" alt="Zaino Tecnico Voyager">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Lifestyle</span>
+              <h3 class="product-title">Zaino Tecnico Voyager</h3>
+              <p class="product-desc">Zaino da viaggio ergonomico, idrorepellente con tasca antifurto.</p>
+              <div class="product-meta">
+                <span class="product-price">79,00 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="width:100%;" onclick="addToCart('Zaino Tecnico Voyager', 79.00, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 3 -->
+          <article class="product-card" data-category="elettronica" data-price="189.50">
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png" alt="Smart Watch Chrono Nova">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Elettronica</span>
+              <h3 class="product-title">Smart Watch Chrono Nova</h3>
+              <p class="product-desc">Cassa ultra-resistente con cardiofrequenzimetro e notifiche smart.</p>
+              <div class="product-meta">
+                <span class="product-price">189,50 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="width:100%;" onclick="addToCart('Smart Watch Chrono Nova', 189.50, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+          <!-- Item 4 -->
+          <article class="product-card" data-category="casa" data-price="45.00">
+            <div class="product-image-container">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/239b4f140_generated_image.png" alt="Lampada Smart NovaGlow">
+            </div>
+            <div class="product-details">
+              <span class="product-category">Casa & Ufficio</span>
+              <h3 class="product-title">Lampada Smart NovaGlow</h3>
+              <p class="product-desc">Controllo touch e sincronizzazione con assistenti vocali con 16M di colori.</p>
+              <div class="product-meta">
+                <span class="product-price">45,00 €</span>
+              </div>
+              <div class="product-actions-bar">
+                <button type="button" class="btn btn-primary btn-sm" style="width:100%;" onclick="addToCart('Lampada Smart NovaGlow', 45.00, 'https://media.base44.com/images/public/69de61d2769998df788ec38b/239b4f140_generated_image.png')">
+                  Aggiungi al Carrello
+                </button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ========================================== -->
+  <!-- PAGE: AUTENTICAZIONE (/autenticazione)      -->
+  <!-- ========================================== -->
+  <section id="autenticazione" class="page-section">
+    <div class="hero-banner" style="padding: 2.5rem 0;">
+      <div class="container" style="text-align: center;">
+        <span class="section-subtitle">Portale Clienti</span>
+        <h1>Entra nel Mondo <span>EmporioNova</span></h1>
+        <p style="margin: 0 auto; max-width: 600px;">Accedi al tuo profilo personale per consultare i tuoi ordini o registrati in meno di un minuto.</p>
+      </div>
+    </div>
+    <div class="auth-section">
+      <div class="container">
+        <div class="auth-container-grid">
+          <!-- Authentication Form Box -->
+          <div class="auth-card">
+            <div class="auth-tabs">
+              <button type="button" class="auth-tab-btn active" id="loginTabBtn" onclick="switchAuthMode('login')">Accedi</button>
+              <button type="button" class="auth-tab-btn" id="signupTabBtn" onclick="switchAuthMode('signup')">Crea Account</button>
+            </div>
+            <!-- Login Form -->
+            <form data-auth="login" id="formLogin">
+              <div class="form-group">
+                <label for="loginEmail">Indirizzo Email</label>
+                <input type="email" id="loginEmail" name="email" class="form-control" placeholder="nome@dominio.it" required>
+              </div>
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" class="form-control" placeholder="••••••••" required>
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+                Accedi al Profilo
+              </button>
+            </form>
+            <!-- Signup Form -->
+            <form data-auth="signup" id="formSignup" style="display: none;">
+              <div class="form-group">
+                <label for="signupName">Nome e Cognome</label>
+                <input type="text" id="signupName" name="name" class="form-control" placeholder="Mario Rossi" required>
+              </div>
+              <div class="form-group">
+                <label for="signupEmail">Indirizzo Email</label>
+                <input type="email" id="signupEmail" name="email" class="form-control" placeholder="nome@dominio.it" required>
+              </div>
+              <div class="form-group">
+                <label for="signupPassword">Password di Sicurezza</label>
+                <input 
+                  type="password" 
+                  id="signupPassword" 
+                  name="password" 
+                  class="form-control" 
+                  placeholder="Min. 8 caratteri, 1 maiuscola, 1 numero, 1 simbolo"
+                  minlength="8" 
+                  pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
+                  title="La password deve contenere almeno 8 caratteri, una lettera maiuscola, un numero e un carattere speciale" 
+                  required
+                >
+              </div>
+              <button type="submit" class="btn btn-accent" style="width: 100%; margin-top: 0.5rem;">
+                Registrati Ora
+              </button>
+            </form>
+          </div>
+          <!-- Perks & Security Banner -->
+          <div class="auth-perks">
+            <h3>I Vantaggi del tuo Account</h3>
+            <p>Creando un account su EmporioNova ottieni un'esperienza di acquisto personalizzata, protetta e ricca di vantaggi esclusivi.</p>
+            <ul class="perks-list">
+              <li>
+                <span class="perk-bullet">✓</span>
+                <div>
+                  <strong>Tracciamento Spedizioni</strong>
+                  <p style="font-size:0.85rem; opacity:0.9;">Monitora gli spostamenti del pacco in tempo reale dal magazzino fino alla tua porta.</p>
+                </div>
+              </li>
+              <li>
+                <span class="perk-bullet">✓</span>
+                <div>
+                  <strong>Protezione & Autenticazione 2FA</strong>
+                  <p style="font-size:0.85rem; opacity:0.9;">Attiva la protezione avanzata a due fattori per blindare le tue transazioni e i tuoi dati.</p>
+                </div>
+              </li>
+              <li>
+                <span class="perk-bullet">✓</span>
+                <div>
+                  <strong>Centro Ticket e Assistenza Prioritaria</strong>
+                  <p style="font-size:0.85rem; opacity:0.9;">Richiedi assistenza dedicata 24/7 e gestisci resi o cambi prodotto con un clic.</p>
+                </div>
+              </li>
+            </ul>
+            <div style="margin-top: 2rem; border-radius: var(--radius-md); overflow: hidden; border: 2px solid rgba(255,255,255,0.2);">
+              <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/239b4f140_generated_image.png" alt="Sicurezza e Crittografia EmporioNova" style="width:100%; height:160px; object-fit: cover;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ========================================== -->
+  <!-- PAGE: DASHBOARD-UTENTE (/dashboard-utente) -->
+  <!-- ========================================== -->
+  <section id="dashboard-utente" class="page-section" data-auth="required" data-role="user" style="display:none;">
+    <div class="dashboard-container">
+      <div class="container">
+        <!-- Dashboard Welcome Bar -->
+        <div class="dash-header">
+          <div class="dash-user-info">
+            <h2>Area Personale</h2>
+            <p>Benvenuto nel tuo pannello di controllo. Gestisci i tuoi ordini e le impostazioni del profilo.</p>
+          </div>
+          <div>
+            <button type="button" class="btn btn-outline btn-sm" data-auth="logout">Disconnetti</button>
+          </div>
+        </div>
+        <!-- Dashboard Shortcut Cards -->
+        <div class="dash-grid">
+          <div class="dash-card">
+            <div class="dash-card-icon">📦</div>
+            <h3>I Tuoi Ordini</h3>
+            <p>Consulta lo storico degli acquisti effettuati e scarica le ricevute in PDF.</p>
+            <button class="btn btn-outline btn-sm" style="width:100%;">Visualizza Ordini</button>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-icon">🛡️</div>
+            <h3>Sicurezza & 2FA</h3>
+            <p>Gestisci password, sessioni attive e attiva la verifica a due fattori.</p>
+            <button class="btn btn-outline btn-sm" style="width:100%;">Gestisci Sicurezza</button>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-icon">🎫</div>
+            <h3>Centro Assistenza</h3>
+            <p>Hai bisogno di supporto? Apri un ticket con il team per risposta rapida.</p>
+            <button class="btn btn-outline btn-sm" style="width:100%;">Apri Richiesta</button>
+          </div>
+        </div>
+        <!-- Orders Table Summary -->
+        <div class="table-container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3>Riepilogo Ultimi Ordini</h3>
+            <span style="font-size:0.85rem; color:var(--text-muted);">Aggiornato in tempo reale</span>
+          </div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ID Ordine</th>
+                <th>Data</th>
+                <th>Articoli</th>
+                <th>Importo</th>
+                <th>Stato</th>
+                <th>Dettagli</th>
+              </tr>
+            </thead>
+            <tbody id="userOrdersTableBody">
+              <tr>
+                <td><strong>#NOV-8291</strong></td>
+                <td>24 Maggio 2024</td>
+                <td>NovaSound Wireless Pro (x1)</td>
+                <td>129,90 €</td>
+                <td><span class="status-badge status-paid">Consegnato</span></td>
+                <td><a href="#dettaglio" style="font-size:0.85rem; font-weight:600;">Ricevuta</a></td>
+              </tr>
+              <tr>
+                <td><strong>#NOV-7430</strong></td>
+                <td>12 Aprile 2024</td>
+                <td>Zaino Tecnico Voyager (x1)</td>
+                <td>79,00 €</td>
+                <td><span class="status-badge status-paid">Spedito</span></td>
+                <td><a href="#dettaglio" style="font-size:0.85rem; font-weight:600;">Ricevuta</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Admin Overview (Only visible if user also has role 'admin') -->
+        <div data-role="admin" style="display:none; margin-top:3rem; padding:2rem; background: #fff; border: 2px dashed var(--primary); border-radius: var(--radius-lg);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+            <h3 style="color:var(--primary-dark);">Pannello Riservato: Amministrazione EmporioNova</h3>
+            <span class="status-badge" style="background:var(--accent-light); color:var(--accent-hover);">Ruolo: Admin</span>
+          </div>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">
+            Sezione visibile esclusivamente agli amministratori autorizzati. Gestione del catalogo prodotti, statistiche vendite e monitoraggio ordini.
+          </p>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+            <div style="padding:1rem; background:var(--surface-alt); border-radius:var(--radius-sm); text-align:center;">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Vendite Mensili</span>
+              <h4 style="font-size:1.5rem; margin-top:0.25rem;">24.580 €</h4>
+            </div>
+            <div style="padding:1rem; background:var(--surface-alt); border-radius:var(--radius-sm); text-align:center;">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Ordini da Evadere</span>
+              <h4 style="font-size:1.5rem; margin-top:0.25rem; color:var(--accent);">18 Ordini</h4>
+            </div>
+            <div style="padding:1rem; background:var(--surface-alt); border-radius:var(--radius-sm); text-align:center;">
+              <span style="font-size:0.8rem; color:var(--text-muted);">Clienti Registrati</span>
+              <h4 style="font-size:1.5rem; margin-top:0.25rem;">1.420</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Global Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Emporio<span>Nova</span></h3>
+          <p>La tua destinazione di riferimento per prodotti esclusivi, elettronica di punta e lifestyle. Garanzia ufficiale e spedizione espressa in tutta Europa.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigazione</h4>
+          <ul class="footer-links">
+            <li><a href="#home" onclick="showPage('home'); return false;">Home</a></li>
+            <li><a href="#catalogo" onclick="showPage('catalogo'); return false;">Tutti i Prodotti</a></li>
+            <li><a href="#autenticazione" onclick="showPage('autenticazione'); return false;">Il Mio Account</a></li>
+            <li><a href="#dashboard-utente" onclick="showPage('dashboard-utente'); return false;">Dashboard</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Supporto</h4>
+          <ul class="footer-links">
+            <li><a href="#home">Spedizioni e Consegne</a></li>
+            <li><a href="#home">Politica sui Resi</a></li>
+            <li><a href="#home">Guida agli Acquisti</a></li>
+            <li><a href="#home">Termini e Condizioni</a></li>
+            <li><a href="#home">Informativa Privacy</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Metodi di Pagamento</h4>
+          <p style="font-size:0.85rem; margin-bottom:1rem;">Acquista in tutta tranquillità con i metodi più sicuri ed affidabili.</p>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <a href="https://paypal.me/{{PAYPAL_ME_ACCOUNT}}" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm" style="background:#fff; color:#0f172a; border-color:#fff;">
+              Paga con PayPal
+            </a>
+          </div>
+          <p style="font-size:0.75rem; margin-top:1rem; color:#64748b;">Assistenza Clienti: supporto@emporionova-shop.it</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 EmporioNova S.r.l. - Tutti i diritti riservati. P.IVA IT09876543210</p>
+        <p>Progettato con precisione per un'esperienza e-commerce intuitiva.</p>
+      </div>
+    </div>
+  </footer>
+  <!-- Inline Core Navigation and Interactive Logic -->
+  <script>
+    // Supabase Initialization
+    const SUPABASE_URL = "{{SUPABASE_URL}}";
+    const SUPABASE_ANON_KEY = "{{SUPABASE_ANON_KEY}}";
+    let supabaseClient = null;
+    if (SUPABASE_URL && SUPABASE_URL !== '{{' + 'SUPABASE_URL}}') {
+      try {
+        supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (err) {
+        console.warn("Inizializzazione Supabase fallita o simulata:", err);
+      }
+    }
+    // SPA Router Navigation
+    function showPage(pageId) {
+      const pages = document.querySelectorAll('.page-section');
+      pages.forEach(function(sec) {
+        sec.classList.remove('active');
+        // keep role/auth protected styles in tact if applicable
+        if (sec.id !== pageId) {
+          if (!sec.hasAttribute('data-role') && !sec.hasAttribute('data-auth')) {
+            sec.style.display = 'none';
+          }
+        }
+      });
+      const target = document.getElementById(pageId);
+      if (target) {
+        target.style.display = 'block';
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      // Update Nav links active state
+      const navLinks = document.querySelectorAll('.nav-link');
+      navLinks.forEach(function(link) {
+        if (link.getAttribute('data-page') === pageId) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      // Close mobile menu if open
+      const navList = document.getElementById('mainNavLinks');
+      if (navList) {
+        navList.classList.remove('show-mobile');
+      }
+      // Update hash in URL cleanly
+      if (window.location.hash !== '#' + pageId) {
+        history.pushState(null, null, '#' + pageId);
+      }
+    }
+    // Toggle Mobile Navigation Menu
+    function toggleMobileMenu() {
+      const navList = document.getElementById('mainNavLinks');
+      if (navList) {
+        navList.classList.toggle('show-mobile');
+      }
+    }
+    // Auth Switcher between Login & Signup
+    function switchAuthMode(mode) {
+      const loginForm = document.getElementById('formLogin');
+      const signupForm = document.getElementById('formSignup');
+      const loginTabBtn = document.getElementById('loginTabBtn');
+      const signupTabBtn = document.getElementById('signupTabBtn');
+      if (mode === 'login') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        loginTabBtn.classList.add('active');
+        signupTabBtn.classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        loginTabBtn.classList.remove('active');
+        signupTabBtn.classList.add('active');
+      }
+    }
+    // Shopping Cart State
+    let cartItems = [];
+    function addToCart(title, price, image) {
+      const existing = cartItems.find(function(item) { return item.title === title; });
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cartItems.push({
+          title: title,
+          price: price,
+          image: image,
+          quantity: 1
+        });
+      }
+      updateCartUI();
+      openCartDrawer();
+    }
+    function removeFromCart(title) {
+      cartItems = cartItems.filter(function(item) { return item.title !== title; });
+      updateCartUI();
+    }
+    function clearCart() {
+      cartItems = [];
+      updateCartUI();
+    }
+    function updateCartUI() {
+      const badge = document.getElementById('cartCountBadge');
+      const container = document.getElementById('cartItemsContainer');
+      const subtotalEl = document.getElementById('cartSubtotalAmount');
+      const totalCount = cartItems.reduce(function(acc, item) { return acc + item.quantity; }, 0);
+      badge.textContent = totalCount;
+      let subtotal = 0;
+      if (cartItems.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:var(--text-muted); margin-top:2rem;">Il carrello è vuoto.</p>';
+      } else {
+        let html = '';
+        cartItems.forEach(function(item) {
+          const itemTotal = item.price * item.quantity;
+          subtotal += itemTotal;
+          html += '<div class="cart-item-row">';
+          html += '  <img src="' + item.image + '" alt="' + item.title + '" class="cart-item-thumb">';
+          html += '  <div class="cart-item-details">';
+          html += '    <div class="cart-item-name">' + item.title + '</div>';
+          html += '    <div class="cart-item-price">' + item.price.toFixed(2) + ' € (x' + item.quantity + ')</div>';
+          html += '  </div>';
+          html += '  <button type="button" class="btn btn-outline btn-sm" onclick="removeFromCart(\'' + item.title.replace(/'/g, "\\'") + '\')">✕</button>';
+          html += '</div>';
+        });
+        container.innerHTML = html;
+      }
+      subtotalEl.textContent = subtotal.toFixed(2) + ' €';
+    }
+    function toggleCartModal() {
+      const drawer = document.getElementById('cartDrawer');
+      const backdrop = document.getElementById('cartBackdrop');
+      drawer.classList.toggle('open');
+      backdrop.classList.toggle('open');
+    }
+    function openCartDrawer() {
+      const drawer = document.getElementById('cartDrawer');
+      const backdrop = document.getElementById('cartBackdrop');
+      drawer.classList.add('open');
+      backdrop.classList.add('open');
+    }
+    // Catalog filtering
+    function filterCatalog(category, buttonEl) {
+      const buttons = document.querySelectorAll('.cat-btn');
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      if (buttonEl) buttonEl.classList.add('active');
+      const cards = document.querySelectorAll('#catalogProductsGrid .product-card');
+      cards.forEach(function(card) {
+        if (category === 'tutti' || card.getAttribute('data-category') === category) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+    // Catalog sorting
+    function sortCatalog(sortOrder) {
+      const grid = document.getElementById('catalogProductsGrid');
+      const cards = Array.from(grid.querySelectorAll('.product-card'));
+      if (sortOrder === 'low-high') {
+        cards.sort(function(a, b) {
+          return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+        });
+      } else if (sortOrder === 'high-low') {
+        cards.sort(function(a, b) {
+          return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+        });
+      }
+      cards.forEach(function(card) {
+        grid.appendChild(card);
+      });
+    }
+    // Handle Hash Navigation on load & popstate
+    window.addEventListener('DOMContentLoaded', function() {
+      const initialHash = window.location.hash.replace('#', '');
+      if (initialHash && document.getElementById(initialHash)) {
+        showPage(initialHash);
+      } else {
+        showPage('home');
+      }
+    });
+    window.addEventListener('popstate', function() {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && document.getElementById(hash)) {
+        showPage(hash);
+      } else {
+        showPage('home');
+      }
+    });
+  </script>
+
+<!-- SEZIONI APPLICATIVE EMPORIONOVA (Gruppo 2) -->
+<!-- ==========================================
+     PAGINA: STORICO ACQUISTI (/storico-acquisti)
+     ========================================== -->
+<section id="storico-acquisti" class="page-section" data-auth="required" data-role="user" style="display: none; padding: 3rem 0; min-height: 80vh; background-color: #f8fafc;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Hero / Header Storico -->
+    <div style="background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%); border-radius: 16px; padding: 2.5rem; color: #ffffff; margin-bottom: 2.5rem; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div>
+          <span style="display: inline-block; background-color: rgba(255, 255, 255, 0.2); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.35rem 0.8rem; border-radius: 9999px; margin-bottom: 0.75rem;">Area Riservata</span>
+          <h1 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #ffffff;">I tuoi Ordini</h1>
+          <p style="font-size: 1.05rem; opacity: 0.9; margin: 0; max-width: 600px;">Consulta l'elenco completo dei tuoi acquisti passati e controlla lo stato delle spedizioni in tempo reale.</p>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="#catalogo" class="btn" style="background-color: #f59e0b; color: #ffffff; font-weight: 600; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer; transition: all 0.2s;">
+            <span>Nuovo Ordine</span>
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+          <a href="#miei-ticket" class="btn" style="background-color: rgba(255,255,255,0.15); color: #ffffff; font-weight: 600; padding: 0.8rem 1.25rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;">
+            <span>Assistenza Ordini</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Barra Statistiche Ordini & Filtro -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.25rem 1.5rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #e0f2fe; color: #0284c7; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">📦</div>
+        <div>
+          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Totale Ordini</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;" id="statTotalOrders">3</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.25rem 1.5rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #fef3c7; color: #d97706; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">🚚</div>
+        <div>
+          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600;">In Consegna</div>
+          <div style="font-size: 1.4rem; font-weight: 700; color: #0f172a;">1 Spedizione</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.25rem 1.5rem; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 1rem;">
+        <div style="background: #ecfdf5; color: #059669; width: 48px; height: 48px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">💳</div>
+        <div>
+          <div style="font-size: 0.85rem; color: #64748b; font-weight: 600;">Metodo Predefinito</div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: #0f172a;">PayPal</div>
+        </div>
+      </div>
+    </div>
+    <!-- Dettaglio Ordini con Tabella e Card responsive -->
+    <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+      <div style="padding: 1.5rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #0f172a; margin: 0;">Dettaglio Ordini e Ricevute</h2>
+          <p style="font-size: 0.9rem; color: #64748b; margin: 0.25rem 0 0 0;">Visualizza lo storico transazioni verificate e scarica le fatture elettroniche.</p>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="orderSearchInput" placeholder="Cerca ordine (es. #EN-)" onkeyup="filtraOrdini()" style="padding: 0.55rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none;">
+        </div>
+      </div>
+      <!-- Elenco Ordini -->
+      <div id="ordersListContainer" style="display: flex; flex-direction: column;">
+        <!-- Ordine 1 (In Transito) -->
+        <article class="order-record-item" data-order-code="EN-89421" style="padding: 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 1rem; transition: background 0.15s;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">Ordine #EN-89421</span>
+                <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">In Spedizione</span>
+              </div>
+              <span style="font-size: 0.85rem; color: #64748b;">Effettuato il 28 Ottobre 2024 &bull; Pagato tramite PayPal ({{PAYPAL_ME_ACCOUNT}})</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 1.25rem; font-weight: 800; color: #0284c7;">129,99 €</span>
+              <div style="font-size: 0.8rem; color: #10b981; font-weight: 600;">Spedizione Gratuita Express</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; align-items: center; background: #f8fafc; padding: 1rem; border-radius: 10px; flex-wrap: wrap;">
+            <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/abbd259ec_generated_image.png" alt="Prodotto Ordinato" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0;">
+            <div style="flex: 1; min-width: 200px;">
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Cuffie Wireless NovaSound ANC Pro</h4>
+              <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #64748b;">Quantità: 1 &bull; Garanzia Italia 24 Mesi &bull; Codice Tracking: <strong style="color: #0f172a;">IT-8492048X</strong></p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="btn" onclick="alert('Tracciamento in corso: Il pacco è in transito presso l\'Hub logistico di Bologna. Consegna prevista: Domani entro le ore 18:00.')" style="background: #0284c7; color: #ffffff; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Segui Pacco</button>
+              <button type="button" class="btn" onclick="scaricaRicevuta('EN-89421', '129.99')" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Ricevuta PDF</button>
+            </div>
+          </div>
+        </article>
+        <!-- Ordine 2 (Consegnato) -->
+        <article class="order-record-item" data-order-code="EN-88104" style="padding: 1.5rem; border-bottom: 1px solid #f1f5f9; display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">Ordine #EN-88104</span>
+                <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Consegnato</span>
+              </div>
+              <span style="font-size: 0.85rem; color: #64748b;">Effettuato il 15 Ottobre 2024 &bull; Pagato tramite PayPal ({{PAYPAL_ME_ACCOUNT}})</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">84,50 €</span>
+              <div style="font-size: 0.8rem; color: #64748b;">Ricevuto il 18 Ottobre</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; align-items: center; background: #f8fafc; padding: 1rem; border-radius: 10px; flex-wrap: wrap;">
+            <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png" alt="Prodotto Ordinato" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0;">
+            <div style="flex: 1; min-width: 200px;">
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Zaino Tecnico Explorer Pro Waterproof</h4>
+              <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #64748b;">Quantità: 1 &bull; Colore: Grigio Antracite</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="#miei-ticket" class="btn" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center;">Richiedi Reso</a>
+              <button type="button" class="btn" onclick="scaricaRicevuta('EN-88104', '84.50')" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Ricevuta PDF</button>
+            </div>
+          </div>
+        </article>
+        <!-- Ordine 3 (Consegnato) -->
+        <article class="order-record-item" data-order-code="EN-86290" style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-weight: 700; font-size: 1.05rem; color: #0f172a;">Ordine #EN-86290</span>
+                <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 9999px;">Consegnato</span>
+              </div>
+              <span style="font-size: 0.85rem; color: #64748b;">Effettuato il 02 Settembre 2024 &bull; Pagamento Elettronico</span>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 1.25rem; font-weight: 800; color: #0f172a;">199,00 €</span>
+              <div style="font-size: 0.8rem; color: #64748b;">Ricevuto il 05 Settembre</div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; align-items: center; background: #f8fafc; padding: 1rem; border-radius: 10px; flex-wrap: wrap;">
+            <img src="https://media.base44.com/images/public/69de61d2769998df788ec38b/239b4f140_generated_image.png" alt="Prodotto Ordinato" style="width: 64px; height: 64px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0;">
+            <div style="flex: 1; min-width: 200px;">
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #1e293b;">Smartwatch Titan Horizon AMOLED</h4>
+              <p style="margin: 0.2rem 0 0 0; font-size: 0.85rem; color: #64748b;">Quantità: 1 &bull; Finitura Silver</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" class="btn" onclick="scaricaRicevuta('EN-86290', '199.00')" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Ricevuta PDF</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+    <!-- Banner Info Transazioni PayPal Safe -->
+    <div style="margin-top: 2rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1.25rem; display: flex; align-items: center; gap: 1rem;">
+      <span style="font-size: 1.75rem;">🛡️</span>
+      <p style="margin: 0; font-size: 0.9rem; color: #166534;">
+        <strong>Protezione Acquisti Attiva:</strong> Tutti i pagamenti gestiti tramite PayPal ({{PAYPAL_ME_ACCOUNT}}) beneficiano della protezione antifrode EmporioNova e rimborso garantito in caso di mancata consegna entro 14 giorni.
+      </p>
+    </div>
+  </div>
+</section>
+<!-- ==========================================
+     PAGINA: PROFILO UTENTE (/profilo-utente)
+     ========================================== -->
+<section id="profilo-utente" class="page-section" data-auth="required" data-role="user" style="display: none; padding: 3rem 0; min-height: 80vh; background-color: #f8fafc;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Hero / Header Profilo -->
+    <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+      <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #0284c7, #38bdf8); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 800;">
+          EN
+        </div>
+        <div>
+          <h1 style="font-family: 'Montserrat', sans-serif; font-size: 1.8rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">I tuoi Dati Personali</h1>
+          <p style="margin: 0; color: #64748b; font-size: 0.95rem;">Aggiorna le tue informazioni di contatto, l'indirizzo di spedizione e le preferenze del tuo account.</p>
+        </div>
+      </div>
+      <div>
+        <button type="button" data-auth="logout" class="btn" style="background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; font-weight: 700; padding: 0.65rem 1.25rem; border-radius: 8px; cursor: pointer;">
+          Esci dal Profilo
+        </button>
+      </div>
+    </div>
+    <!-- Contenuto a due colonne: Dati Anagrafici & Sicurezza/2FA -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem;">
+      <!-- Colonna 1: Dati & Indirizzo Spedizione -->
+      <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+        <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 1.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <span>📍</span> Indirizzo di Spedizione & Recapiti
+        </h2>
+        <form id="formAggiornaProfilo" onsubmit="salvaDatiProfilo(event)" style="display: flex; flex-direction: column; gap: 1.2rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Nome</label>
+              <input type="text" id="profNome" value="Marco" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Cognome</label>
+              <input type="text" id="profCognome" value="Rossi" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Email di contatto</label>
+            <input type="email" id="profEmail" value="m.rossi.demo@emporionova.it" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Telefono di contatto</label>
+            <input type="tel" id="profTelefono" value="+39 349 1234567" style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Indirizzo (Via / Piazza, Civico)</label>
+            <input type="text" id="profIndirizzo" value="Via Garibaldi, 42" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.75rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Città</label>
+              <input type="text" id="profCitta" value="Bologna" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">CAP</label>
+              <input type="text" id="profCap" value="40121" maxlength="5" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Prov.</label>
+              <input type="text" id="profProv" value="BO" maxlength="2" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+          </div>
+          <div style="margin-top: 0.5rem;">
+            <button type="submit" class="btn" style="width: 100%; background: #0284c7; color: #ffffff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s;">
+              Salva Modifiche Profilo
+            </button>
+          </div>
+          <div id="profSaveSuccess" style="display: none; background: #ecfdf5; color: #065f46; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; text-align: center;">
+            ✓ Dati aggiornati con successo!
+          </div>
+        </form>
+      </div>
+      <!-- Colonna 2: Sicurezza e Autenticazione a Due Fattori (2FA) -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Blocco 2FA -->
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🔐</span> Sicurezza e 2FA
+            </h2>
+            <span id="badge2FA" style="background: #fef3c7; color: #b45309; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px;">2FA Disattivata</span>
+          </div>
+          <p style="font-size: 0.9rem; color: #64748b; line-height: 1.5; margin-bottom: 1.25rem;">
+            Aumenta la sicurezza del tuo account abilitando o disabilitando l'Autenticazione a Due Fattori (2FA) con codice OTP monouso tramite Google Authenticator o Authy.
+          </p>
+          <div style="border: 1px dashed #cbd5e1; background: #f8fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem; text-align: center;">
+            <div id="box2FAStatusText" style="font-size: 0.95rem; font-weight: 600; color: #1e293b; margin-bottom: 0.5rem;">Protezione Extra per Acquisti</div>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0;">Richiedi un codice a 6 cifre ad ogni accesso da un nuovo dispositivo o browser.</p>
+            <button type="button" id="btnToggle2FA" onclick="toggleTwoFactorAuth()" class="btn" style="background: #0284c7; color: #ffffff; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+              Attiva Autenticazione 2FA
+            </button>
+          </div>
+          <!-- Modulo Cambio Password -->
+          <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.5rem 0 0.75rem 0;">Aggiornamento Password</h3>
+          <form id="formCambioPassword" onsubmit="cambiaPasswordUtente(event)" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem;">Password Attuale</label>
+              <input type="password" id="oldPwd" required style="width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 0.25rem;">Nuova Password (min. 8 caratteri, maiuscola e numero)</label>
+              <input type="password" id="newPwd" minlength="8" required pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}" title="Almeno 8 caratteri, una lettera maiuscola e un numero" style="width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; box-sizing: border-box;">
+            </div>
+            <button type="submit" class="btn" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+              Aggiorna Credenziali
+            </button>
+          </form>
+        </div>
+        <!-- Dispositivi Connessi -->
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.5rem;">
+          <h3 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 0.75rem 0;">Sessioni Attive</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9;">
+            <div>
+              <strong style="color: #1e293b;">Chrome &bull; macOS (Milano, IT)</strong>
+              <div style="color: #10b981; font-size: 0.75rem;">Dispositivo attuale (Attivo ora)</div>
+            </div>
+            <span style="color: #64748b; font-size: 0.8rem;">Online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ==========================================
+     PAGINA: MIEI TICKET (/miei-ticket)
+     ========================================== -->
+<section id="miei-ticket" class="page-section" data-auth="required" data-role="user" style="display: none; padding: 3rem 0; min-height: 80vh; background-color: #f8fafc;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Hero Assistenza -->
+    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 2.5rem; color: #ffffff; margin-bottom: 2.5rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div>
+          <span style="display: inline-block; background-color: #0284c7; color: #ffffff; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.35rem 0.8rem; border-radius: 9999px; margin-bottom: 0.75rem;">Supporto Dedicato EmporioNova</span>
+          <h1 style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #ffffff;">Centro Assistenza Clienti</h1>
+          <p style="font-size: 1.05rem; opacity: 0.9; margin: 0; max-width: 650px;">Hai bisogno di aiuto con un ordine o con il tuo account? Invia una richiesta al nostro team e monitora le risposte in tempo reale.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; text-align: center;">
+          <div style="font-size: 0.8rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Tempo medio di risposta</div>
+          <div style="font-size: 1.5rem; font-weight: 800; color: #f59e0b; margin-top: 0.25rem;">&lt; 2 Ore</div>
+          <div style="font-size: 0.75rem; color: #cbd5e1;">Lunedì - Sabato, 09:00 - 19:00</div>
+        </div>
+      </div>
+    </div>
+    <!-- Layout Griglia: Modulo Apertura Ticket + Lista Storico Ticket -->
+    <div style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 2rem;">
+      <!-- Modulo Nuovo Ticket -->
+      <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); height: fit-content;">
+        <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #0f172a; margin: 0 0 0.5rem 0;">Apri un nuovo Ticket</h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">Compila il modulo per inviare la richiesta. Riceverai notifica appena un nostro operatore prenderà in carico il fascicolo.</p>
+        <form id="formNuovoTicket" onsubmit="creaNuovoTicket(event)" style="display: flex; flex-direction: column; gap: 1.1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Categoria Problema *</label>
+            <select id="ticketCategoria" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff; box-sizing: border-box;">
+              <option value="spedizioni">Spedizione e Consegna Pacco</option>
+              <option value="resi">Resi, Rimborsi e Garanzia</option>
+              <option value="pagamenti">Problemi con Pagamento PayPal</option>
+              <option value="account">Supporto Account e Accesso</option>
+              <option value="altro">Altro Chiarimento</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Riferimento Ordine (Opzionale)</label>
+            <input type="text" id="ticketOrdineRef" placeholder="Es. #EN-89421" style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Oggetto della Richiesta *</label>
+            <input type="text" id="ticketOggetto" placeholder="Breve descrizione del problema" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Messaggio Dettagliato *</label>
+            <textarea id="ticketMessaggio" rows="4" placeholder="Fornisci quanti più dettagli possibili per velocizzare la risoluzione..." required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
+          </div>
+          <button type="submit" class="btn" style="background: #0284c7; color: #ffffff; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: background 0.2s;">
+            Invia Ticket di Supporto
+          </button>
+        </form>
+      </div>
+      <!-- Elenco Ticket Aperti / Conclusi -->
+      <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.3rem; font-weight: 700; color: #0f172a; margin: 0;">I Tuoi Ticket Aperti</h2>
+          <span style="font-size: 0.85rem; color: #64748b;">Aggiornamento live attivo</span>
+        </div>
+        <div id="ticketsFeed" style="display: flex; flex-direction: column; gap: 1rem;">
+          <!-- Ticket 1 -->
+          <div class="ticket-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                  <span style="font-weight: 700; color: #0f172a; font-size: 0.95rem;">#TK-4092</span>
+                  <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px;">In Corso</span>
+                </div>
+                <h3 style="font-size: 0.9rem; font-weight: 600; color: #334155; margin: 0;">Tracciamento Spedizione Ordine #EN-89421</h3>
+              </div>
+              <span style="font-size: 0.75rem; color: #94a3b8;">Oggi, 10:14</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.4;">Salve, vorrei avere aggiornamenti sullo stato della spedizione del mio ultimo ordine in quanto risulta in lavorazione da 2 giorni.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.75rem;">
+              <span style="font-size: 0.8rem; color: #0284c7; font-weight: 600;">1 Risposta dall'Assistenza</span>
+              <button type="button" class="btn" style="background: transparent; color: #0284c7; border: 1px solid #0284c7; padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">Visualizza Dettagli</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>ontent: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">#TCK-4812 &bull; 29 Ottobre 2024</span>
+                <h4 style="margin: 0.2rem 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Richiesta variazione orario consegna ordine #EN-89421</h4>
+              </div>
+              <span style="background: #dbeafe; color: #1d4ed8; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; white-space: nowrap;">In Lavorazione</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 0.5rem 0 1rem 0; line-height: 1.4;">
+              <em>"Salve, vorrei chiedere se fosse possibile far consegnare il pacco dopo le ore 14:00 al portiere."</em>
+            </p>
+            <div style="background: #f8fafc; border-left: 3px solid #0284c7; padding: 0.75rem 1rem; border-radius: 0 8px 8px 0; font-size: 0.85rem;">
+              <strong style="color: #0284c7;">Risposta Supporto EmporioNova (Sara M.):</strong>
+              <p style="margin: 0.25rem 0 0 0; color: #334155;">Gentile cliente, abbiamo inoltrato la nota speciale direttamente all'autista GLS competente di zona.</p>
+            </div>
+          </div>
+          <!-- Ticket 2 -->
+          <div class="ticket-card" style="background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.25rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">
+              <div>
+                <span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">#TCK-3920 &bull; 19 Ottobre 2024</span>
+                <h4 style="margin: 0.2rem 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">Conferma Ricevuta Fiscale per Garanzia</h4>
+              </div>
+              <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; white-space: nowrap;">Risolto</span>
+            </div>
+            <p style="font-size: 0.85rem; color: #475569; margin: 0.5rem 0 0 0; line-height: 1.4;">
+              Ricevuta valida inviata via email e allegata allo Storico Acquisti dell'account.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ==========================================
+     PAGINA: DASHBOARD ADMIN (/dashboard-admin)
+     ========================================== -->
+<section id="dashboard-admin" class="page-section" data-role="admin" style="display: none; padding: 3rem 0; min-height: 80vh; background-color: #f1f5f9;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Header Pannello Amministrazione -->
+    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; padding: 2rem 2.5rem; color: #ffffff; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+      <div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <span style="background: #ef4444; color: #ffffff; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em;">Accesso Riservato Staff</span>
+          <span style="color: #94a3b8; font-size: 0.85rem;">Ruolo: Super Amministratore</span>
+        </div>
+        <h1 style="font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 800; color: #ffffff; margin: 0 0 0.25rem 0;">Dashboard di Amministrazione</h1>
+        <p style="font-size: 0.95rem; color: #94a3b8; margin: 0;">Panoramica generale delle vendite, degli utenti registrati e dei ticket aperti.</p>
+      </div>
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <button type="button" onclick="aggiornaDatiAdmin()" class="btn" style="background: rgba(255,255,255,0.1); color: #ffffff; border: 1px solid rgba(255,255,255,0.2); padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">
+          Aggiorna Metriche ↻
+        </button>
+        <button type="button" data-auth="logout" class="btn" style="background: #ef4444; color: #ffffff; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer;">
+          Termina Sessione Admin
+        </button>
+      </div>
+    </div>
+    <!-- Statistiche KPI Dashboard -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Fatturato Mese Corrente</span>
+          <span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">+14.2%</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #0f172a;">24.890 €</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">PayPal Merchant: {{PAYPAL_ME_ACCOUNT}}</div>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Ordini Totali Ricevuti</span>
+          <span style="background: #e0f2fe; color: #0369a1; font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">Oggi: 18</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #0284c7;" id="adminTotalOrdersCount">342</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">12 in attesa di spedizione</div>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Ticket di Assistenza</span>
+          <span style="background: #fef3c7; color: #d97706; font-size: 0.75rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px;">1 Richiede Azione</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #f59e0b;" id="adminTicketCount">4 Aperti</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Tempo medio risp: 45 min</div>
+      </div>
+      <div style="background: #ffffff; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">Clienti Registrati</span>
+          <span style="color: #10b981; font-size: 0.8rem; font-weight: 700;">+28 questo mese</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 800; color: #0f172a;">1.240</div>
+        <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Autenticati via Supabase</div>
+      </div>
+    </div>
+    <!-- Strumenti di Gestione (Creazione Annunci/Prodotti & Moderazione Ticket) -->
+    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 2rem;">
+      <!-- Sezione Creazione Nuovo Annuncio / Prodotto nel Catalogo -->
+      <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+        <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.5rem;">
+          <span>➕</span> Strumenti di Gestione: Pubblica Annuncio
+        </h2>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">Accesso rapido alla creazione di annunci e gestione categorie merceologiche del negozio EmporioNova.</p>
+        <form id="formCreaProdottoAdmin" onsubmit="pubblicaProdottoAdmin(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Titolo Prodotto *</label>
+            <input type="text" id="adminProdTitolo" placeholder="Es. Tastiera Meccanica Stealth Nova" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Prezzo in Euro (€) *</label>
+              <input type="number" step="0.01" min="1" id="adminProdPrezzo" placeholder="79.99" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; box-sizing: border-box;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Categoria *</label>
+              <select id="adminProdCategoria" required style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff; box-sizing: border-box;">
+                <option value="elettronica">Elettronica & Audio</option>
+                <option value="accessori">Accessori & Zaini</option>
+                <option value="lifestyle">Lifestyle & Smart Device</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">URL Immagine Ufficiale</label>
+            <select id="adminProdImmagine" style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff; box-sizing: border-box;">
+              <option value="https://media.base44.com/images/public/69de61d2769998df788ec38b/327e36b12_generated_image.png">Immagine Prodotto A (Tech/Audio)</option>
+              <option value="https://media.base44.com/images/public/69de61d2769998df788ec38b/d1e5c9b81_generated_image.png">Immagine Prodotto B (Smart Device)</option>
+              <option value="https://media.base44.com/images/public/69de61d2769998df788ec38b/563141920_generated_image.png">Immagine Prodotto C (Accessori)</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #334155; margin-bottom: 0.35rem;">Descrizione Scheda Tecnica</label>
+            <textarea id="adminProdDesc" rows="3" placeholder="Specifiche tecniche e dettagli promozionali..." style="width: 100%; padding: 0.65rem 0.8rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; resize: vertical; box-sizing: border-box;"></textarea>
+          </div>
+          <button type="submit" class="btn" style="background: #0284c7; color: #ffffff; border: none; padding: 0.75rem; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer;">
+            Salva & Pubblica nel Catalogo
+          </button>
+        </form>
+        <div id="adminProductFeedback" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #ecfdf5; color: #065f46; border-radius: 8px; font-size: 0.85rem; text-align: center;">
+          ✓ Prodotto aggiunto al catalogo EmporioNova!
+        </div>
+      </div>
+      <!-- Sezione Risoluzione Ticket & Moderazione Ordini -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Moderazione Ticket Utenti -->
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+          <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 700; color: #0f172a; margin: 0 0 1rem 0;">
+            Risoluzione Ticket Utenti
+          </h2>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div id="adminTicketRow1" style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; background: #fafafa;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <strong style="color: #0f172a; font-size: 0.9rem;">#TCK-4812 &bull; Marco Rossi</strong>
+                <span style="font-size: 0.75rem; background: #fef3c7; color: #92400e; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">In Corso</span>
+              </div>
+              <p style="font-size: 0.85rem; color: #475569; margin: 0 0 0.75rem 0;">
+                "Richiesta variazione orario consegna ordine #EN-89421 dopo le ore 14:00."
+              </p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" onclick="chiudiTicketAdmin('adminTicketRow1')" class="btn" style="background: #10b981; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                  Segna come Risolto
+                </button>
+                <button type="button" onclick="alert('Email di sollecito inviata al corriere GLS.')" class="btn" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer;">
+                  Invia Nota GLS
+                </button>
+              </div>
+            </div>
+            <div id="adminTicketRow2" style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; background: #fafafa;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <strong style="color: #0f172a; font-size: 0.9rem;">#TCK-5104 &bull; Elena Bianchi</strong>
+                <span style="font-size: 0.75rem; background: #fee2e2; color: #991b1b; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Urgente</span>
+              </div>
+              <p style="font-size: 0.85rem; color: #475569; margin: 0 0 0.75rem 0;">
+                "Verifica ricezione accredito su conto PayPal {{PAYPAL_ME_ACCOUNT}}."
+              </p>
+              <div style="display: flex; gap: 0.5rem;">
+                <button type="button" onclick="chiudiTicketAdmin('adminTicketRow2')" class="btn" style="background: #10b981; color: #fff; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                  Conferma & Chiudi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Gestione Stato Spedizioni Rapida -->
+        <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 1.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+          <h3 style="font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0 0 0.75rem 0;">
+            Avanzamento Spedizioni in Corso
+          </h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Aggiorna con un click lo stato dei pacchi pronti per il ritiro corriere.</p>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem;">
+            <span>Pacco #EN-89421 (Bologna, IT)</span>
+            <button type="button" onclick="this.textContent = 'Spedito ✓'; this.style.background = '#dcfce7'; this.style.color = '#15803d';" style="background: #e2e8f0; border: none; padding: 0.35rem 0.75rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.75rem;">
+              Conferma Ritiro
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ==========================================
+     LOGICA JAVASCRIPT APPLICATIVA DI GRUPPO
+     ========================================== -->
+<script>
+  // Gestione routing SPA unificato con showPage
+  if (typeof window.showPage !== 'function') {
+    window.showPage = function(pageId) {
+      const allSections = document.querySelectorAll('.page-section');
+      allSections.forEach(function(sec) {
+        sec.style.display = 'none';
+      });
+      const targetSection = document.getElementById(pageId);
+      if (targetSection) {
+        targetSection.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.location.hash = pageId;
+      }
+    };
+  }
+  // Filtro ricerca nello storico acquisti
+  function filtraOrdini() {
+    const input = document.getElementById('orderSearchInput');
+    if (!input) return;
+    const filterValue = input.value.toLowerCase().trim();
+    const items = document.querySelectorAll('#ordersListContainer .order-record-item');
+    items.forEach(function(item) {
+      const code = (item.getAttribute('data-order-code') || '').toLowerCase();
+      const text = item.textContent.toLowerCase();
+      if (code.includes(filterValue) || text.includes(filterValue)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+  // Generazione e download mock ricevuta acquisto
+  function scaricaRicevuta(orderId, importo) {
+    const infoRicevuta = "EMPORIONOVA - RICEVUTA DI VENDITA\n" +
+      "Numero Ordine: " + orderId + "\n" +
+      "Importo Pagato: " + importo + " EUR\n" +
+      "Metodo di Pagamento: PayPal ({{PAYPAL_ME_ACCOUNT}})\n" +
+      "Stato Transazione: APPROVATA & FATTURATA\n" +
+      "Grazie per aver scelto EmporioNova!";
+    const blob = new Blob([infoRicevuta], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "Ricevuta_EmporioNova_" + orderId + ".txt";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  // Salvataggio preferenze dati anagrafici
+  function salvaDatiProfilo(event) {
+    event.preventDefault();
+    const alertBox = document.getElementById('profSaveSuccess');
+    if (alertBox) {
+      alertBox.style.display = 'block';
+      setTimeout(function() {
+        alertBox.style.display = 'none';
+      }, 3500);
+    }
+  }
+  // Toggle interattivo 2FA
+  var is2FAEnabled = false;
+  function toggleTwoFactorAuth() {
+    is2FAEnabled = !is2FAEnabled;
+    const badge = document.getElementById('badge2FA');
+    const btn = document.getElementById('btnToggle2FA');
+    const statusText = document.getElementById('box2FAStatusText');
+    if (is2FAEnabled) {
+      badge.textContent = '2FA Attiva ✓';
+      badge.style.background = '#dcfce7';
+      badge.style.color = '#15803d';
+      btn.textContent = 'Disattiva Autenticazione 2FA';
+      btn.style.background = '#e2e8f0';
+      btn.style.color = '#334155';
+      statusText.textContent = 'Protezione 2FA Attiva (Google Authenticator collegato)';
+      alert('Autenticazione a Due Fattori abilitata con successo per il tuo account.');
+    } else {
+      badge.textContent = '2FA Disattivata';
+      badge.style.background = '#fef3c7';
+      badge.style.color = '#b45309';
+      btn.textContent = 'Attiva Autenticazione 2FA';
+      btn.style.background = '#0284c7';
+      btn.style.color = '#ffffff';
+      statusText.textContent = 'Protezione Extra per Acquisti';
+      alert('Autenticazione a Due Fattori disattivata.');
+    }
+  }
+  // Aggiornamento Password utente
+  function cambiaPasswordUtente(event) {
+    event.preventDefault();
+    const oldP = document.getElementById('oldPwd').value;
+    const newP = document.getElementById('newPwd').value;
+    if (newP.length < 8) {
+      alert('La nuova password deve contenere almeno 8 caratteri.');
+      return;
+    }
+    alert('Password aggiornata con successo! La prossima sessione richiederà le nuove credenziali.');
+    document.getElementById('formCambioPassword').reset();
+  }
+  // Creazione nuovo Ticket cliente
+  function creaNuovoTicket(event) {
+    event.preventDefault();
+    const categoria = document.getElementById('ticketCategoria').value;
+    const oggetto = document.getElementById('ticketOggetto').value;
+    const messaggio = document.getElementById('ticketMessaggio').value;
+    const ordineRef = document.getElementById('ticketOrdineRef').value;
+    const randomId = Math.floor(1000 + Math.random() * 9000);
+    const feed = document.getElementById('ticketsFeed');
+    const card = document.createElement('div');
+    card.className = 'ticket-card';
+    card.style.background = '#ffffff';
+    card.style.borderRadius = '12px';
+    card.style.border = '1px solid #e2e8f0';
+    card.style.padding = '1.25rem';
+    card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
+    card.innerHTML = 
+      '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">' +
+        '<div>' +
+          '<span style="font-size: 0.75rem; font-weight: 700; color: #64748b;">#TCK-' + randomId + ' &bull; Adesso (' + categoria + ')</span>' +
+          '<h4 style="margin: 0.2rem 0; font-size: 1.05rem; font-weight: 700; color: #0f172a;">' + oggetto + '</h4>' +
+        '</div>' +
+        '<span style="background: #fef3c7; color: #b45309; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; white-space: nowrap;">In Attesa Supporto</span>' +
+      '</div>' +
+      '<p style="font-size: 0.85rem; color: #475569; margin: 0.5rem 0 0 0; line-height: 1.4;">' + messaggio + (ordineRef ? '<br><small style="color:#0284c7;">Riferimento: ' + ordineRef + '</small>' : '') + '</p>';
+    feed.insertBefore(card, feed.firstChild);
+    document.getElementById('formNuovoTicket').reset();
+    alert('Ticket inviato al team EmporioNova! Un operatore ti risponderà a breve.');
+  }
+  // Pubblicazione prodotto da Dashboard Amministratore
+  function pubblicaProdottoAdmin(event) {
+    event.preventDefault();
+    const titolo = document.getElementById('adminProdTitolo').value;
+    const prezzo = parseFloat(document.getElementById('adminProdPrezzo').value).toFixed(2);
+    const categoria = document.getElementById('adminProdCategoria').value;
+    const immagine = document.getElementById('adminProdImmagine').value;
+    // Se existe la griglia prodotti nel catalogo già caricato nel DOM, inserisci la nuova card
+    const catalogGrid = document.getElementById('catalogProductsGrid');
+    if (catalogGrid) {
+      const newCard = document.createElement('div');
+      newCard.className = 'product-card';
+      newCard.setAttribute('data-category', categoria);
+      newCard.setAttribute('data-price', prezzo);
+      newCard.style.background = '#ffffff';
+      newCard.style.borderRadius = '12px';
+      newCard.style.overflow = 'hidden';
+      newCard.style.border = '1px solid #e2e8f0';
+      newCard.style.display = 'flex';
+      newCard.style.flexDirection = 'column';
+      newCard.innerHTML = 
+        '<img src="' + immagine + '" alt="' + titolo + '" style="width: 100%; height: 220px; object-fit: cover;">' +
+        '<div style="padding: 1.25rem; display: flex; flex-direction: column; flex: 1;">' +
+          '<div style="font-size: 0.75rem; font-weight: 700; color: #0284c7; text-transform: uppercase; margin-bottom: 0.25rem;">' + categoria + '</div>' +
+          '<h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin: 0 0 0.5rem 0;">' + titolo + '</h3>' +
+          '<div style="font-size: 1.3rem; font-weight: 800; color: #0f172a; margin-top: auto; margin-bottom: 1rem;">' + prezzo + ' €</div>' +
+          '<button type="button" class="btn" onclick="addToCart(\'' + titolo.replace(/'/g, "\\'") + '\', ' + prezzo + ', \'' + immagine + '\')" style="background: #0284c7; color: #fff; border: none; padding: 0.65rem; border-radius: 8px; font-weight: 700; cursor: pointer;">Aggiungi al Carrello</button>' +
+        '</div>';
+      catalogGrid.prepend(newCard);
+    }
+    const feedback = document.getElementById('adminProductFeedback');
+    if (feedback) {
+      feedback.style.display = 'block';
+      setTimeout(function() {
+        feedback.style.display = 'none';
+      }, 4000);
+    }
+    document.getElementById('formCreaProdottoAdmin').reset();
+  }
+  // Chiusura rapida ticket lato admin
+  function chiudiTicketAdmin(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) {
+      row.style.opacity = '0.4';
+      row.style.pointerEvents = 'none';
+      const badge = row.querySelector('span');
+      if (badge) {
+        badge.textContent = 'Risolto ✓';
+        badge.style.background = '#dcfce7';
+        badge.style.color = '#15803d';
+      }
+    }
+  }
+  // Simulazione refresh metriche
+  function aggiornaDatiAdmin() {
+    alert('Metriche di vendita e ticket sincronizzate con successo!');
+  }
+</script>
+<script>
+function addToCart(){var args=arguments;if(args[0]){var el=document.getElementById(args[0]);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});return;}}}
+</script>
+
+<!-- ==========================================
+     PAGINA 1: ADMIN - GESTIONE PRODOTTI
+     Route: /admin-prodotti (#admin-prodotti)
+     ========================================== -->
+<section id="admin-prodotti" class="page-section" data-role="admin" style="display:none; padding: 2rem 1rem 4rem 1rem; background-color: #f8fafc; min-height: 85vh;">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- Breadcrumb e Top bar -->
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem;">
+      <div>
+        <span style="font-size: 0.85rem; font-weight: 600; color: #0284c7; text-transform: uppercase; letter-spacing: 0.5px;">Pannello Amministratore</span>
+        <h1 style="font-family: 'Montserrat', sans-serif; font-size: 1.85rem; font-weight: 800; color: #0f172a; margin: 0.2rem 0 0 0;">Gestione Annunci di Vendita</h1>
+      </div>
+      <div style="display: flex; gap: 0.75rem;">
+        <a href="#dashboard-admin" style="text-decoration: none; padding: 0.6rem 1.1rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; background: #ffffff; color: #475569; border: 1px solid #cbd5e1; transition: all 0.2s ease;">← Dashboard</a>
+        <a href="#catalogo" style="text-decoration: none; padding: 0.6rem 1.1rem; border-radius: 8px; font-weight: 600; font-size: 0.875rem; background: #0284c7; color: #ffffff; border: none; box-shadow: 0 2px 4px rgba(2,132,199,0.2);">Vedi Negozio Live</a>
+      </div>
+    </div>
+    <!-- Sezione HERO: Crea e Modifica Prodotti -->
+    <div style="background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 2rem; margin-bottom: 2.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+      <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem;">
+        <div>
+          <span style="display: inline-block; background: #e0f2fe; color: #0369a1; padding: 0.3rem 0.8rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem;">Creazione Annunci</span>
+          <h2 style="font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: #0f172a; margin: 0;">Crea e Modifica Prodotti</h2>
+          <p style="color: #64748b; font-size: 0.95rem; margin: 0.3rem 0 0 0;">Inserisci nuovi annunci di vendita nel catalogo o aggiorna in tempo reale le informazioni dei prodotti esistenti.</p>
+        </div>
+        <button type="button" onclick="document.getElementById('formAdminProdottoFull').reset(); document.getElementById('editProductId').value='';" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer;">Pulisci Modulo</button>
+      </div>
+      <div id="adminProductFeedbackSuccess" style="display:none; background: #ecfdf5; border-left: 4px solid #10b981; color: #065f46; padding: 0.85rem 1.25rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 600; font-size: 0.9rem;">
+        ✓ Annuncio pubblicato e sincronizzato con il catalogo pubblico!
+      </div>
+      <form id="formAdminProdottoFull" onsubmit="handleSalvaProdottoAdmin(event)" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+        <input type="hidden" id="editProductId" value="">
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="adminInpNome" style="font-size: 0.85rem; font-weight: 700; color: #334155;">Titolo Annuncio *</label>
+          <input type="text" id="adminInpNome" required placeholder="Es. Cuffie Wireless Over-Ear Active Noise" style="padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem;">
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="adminInpCategoria" style="font-size: 0.85rem; font-weight: 700; color: #334155;">Categoria Catalogo *</label>
+          <select id="adminInpCategoria" required style="padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; backg
